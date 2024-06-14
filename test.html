@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+    <title>Document</title>    
+</head>
+
+<body>
+    <input class="inputCheck" placeholder="text"/>
+    <button class="onclickInput">Send</button>
+    <div class="resultServer"></div>
+    <div class="countServer"></div>
+   
+    <script>
+    
+    
+        const input = document.querySelector('.inputCheck');
+        const onClick = document.querySelector('.onclickInput');
+        const resultServer = document.querySelector('.resultServer')
+        const countServer = document.querySelector('.countServer')
+        
+
+        input.addEventListener('input', function(e) {
+    console.log('Input value changed to:', e.target.value);
+});
+
+
+        onClick.addEventListener('click', function(){
+      
+
+             fetch('http://192.168.1.6:3000/data', {
+                method: 'POST',
+                headers: {'Content-type': 'application/json'},
+                body: JSON.stringify({
+
+                    message: input.value
+                })
+             })
+             .then((response)=>{
+                resultServer.classList.toggle('ColorBlue', response.ok);
+                resultServer.classList.toggle('ColorRed', !response.ok);
+                
+                return response.json()
+            })
+             .then((response)=> {
+                console.log(response)
+               return resultServer.innerHTML = `
+           <div>${response.message}</div>
+           <div>${response.messageP.palindrom}</div>`
+                 
+        })
+    })
+
+
+        fetch('http://192.168.1.6:3000/count')
+        .then((response)=>response.json())
+        .then((response)=>{
+           return countServer.innerHTML = `
+           <div>Кількість запитів на БД MongoDB ${response.count}</div>
+           <div>Загальна кількість запитів ${response.request}</div>
+           `
+        })
+
+    </script>
+
+
+</body>
+</html>
